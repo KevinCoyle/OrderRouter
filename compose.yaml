@@ -1,0 +1,49 @@
+﻿services:
+  db:
+    image: docker.io/postgres:alpine
+    pull_policy: missing
+    restart: always
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: orderrouterdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: P@ssw0rD
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d orderrouterdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  app:
+    image: orderrouter
+    build:
+      context: .
+      dockerfile: OrderRouter.Api/Dockerfile
+    container_name: orderrouter
+    restart: always
+    environment:
+      - Database__Host=db
+      - Database__DatabaseName=orderrouterdb
+      - Database__Username=postgres
+      - Database__Password=P@ssw0rD
+    ports:
+      - "5000:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+    name: orderrouter-db
+
+networks:
+  app-network:
+    name: orderrouter-network
