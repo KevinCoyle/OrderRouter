@@ -1,4 +1,6 @@
 /OrderRouter.Api/bin/
 /OrderRouter.Api/obj/
+/OrderRouter.Tests/bin/
+/OrderRouter.Tests/obj/
 /OrderRouter.sln.DotSettings.user
 /.idea/
